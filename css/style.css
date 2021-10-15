@@ -1,0 +1,63 @@
+#canvas {
+    border: 1px solid gray;
+}
+
+nav {
+    display: block;
+}
+
+ol {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+li {
+    float: left;
+    border-right: 1px solid #bbb;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color: #111;
+}
+
+#title>div {
+    clear: both;
+}
+
+#chartoptions {
+    padding: 10px 5px 10px 0px;
+}
+
+label {
+    padding: 5px;
+}
+
+input {
+    padding: 5px;
+}
+
+input[type="text"] {
+    padding: 5px;
+}
+
+input[type="checkbox"] {
+    padding: 10px 20px 10px 5px;
+    min-width: 12px;
+}
+
+.row{
+    clear: both;
+    width: 100%;
+    padding: 10px;
+}
