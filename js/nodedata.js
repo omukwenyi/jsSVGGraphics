@@ -1,6 +1,6 @@
 "use strict";
 
-import {getRandomIntInclusive} from './common.js';
+import { getRandomIntInclusive } from "./common.js";
 class BMember {
     constructor(id, left, right) {
         this.id = id;
@@ -24,12 +24,17 @@ class GraphNode {
         this.neighbours = neighbours;
         this.degreeCentrality = 0.0;
         this.closenessCentrality = 0.0;
+        this.dispX = 0;
+        this.dispY = 0;
+        this.posX = 0;
+        this.posY = 0;
     }
 }
 
 class Graph {
-    constructor(nodes) {
+    constructor(nodes, edges) {
         this.Nodes = nodes;
+        this.edges = edges;
     }
 }
 
@@ -84,17 +89,31 @@ function createGraph(nodes, maxDegree) {
             if (i === j) {
                 adjMatrix[i][j] = 0;
             } else {
+                let numConnsOut = adjMatrix[i].reduce((pv, cv) => pv + cv);
+
+                let numConnsIn = 0;
+                for (let k = 0; k <= i; k++) {
+                    numConnsIn += adjMatrix[k][j];
+                }
+
+                //if (numConnsOut < maxDegree && numConnsIn < maxDegree) {
                 let conValue = getRandomIntInclusive(0, 1);
+                
+                if (numConnsIn >= maxDegree || numConnsOut >= maxDegree) {
+                    conValue = 0;
+                    // console.log(i, j, numConnsIn, numConnsOut);
+                }
+
                 adjMatrix[i][j] = conValue;
                 if (adjMatrix[j][i] == undefined) {
                     adjMatrix[j] = new Array(nodes).fill(0);
                 }
-                adjMatrix[j][i] = conValue;
+                adjMatrix[j][i] = conValue;                
             }
         }
     }
 
-    //console.log(adjMAtrix);
+    // console.log(adjMatrix);
 
     let graph = [];
 
@@ -135,11 +154,11 @@ function createGraph(nodes, maxDegree) {
             }
         }
 
-        const sum = distMatrix[i].reduce((pv,cv)=>pv + cv);
-        const score = (sum == 0) ? 0 : (nodes-1)/sum;
+        const sum = distMatrix[i].reduce((pv, cv) => pv + cv);
+        const score = sum == 0 ? 0 : (nodes - 1) / sum;
         graph[i].closenessCentrality = score;
     }
-    
+
     //console.log(distMatrix);
     //console.log(scores);
     return graph;
@@ -154,7 +173,7 @@ function distanceToNode(graph, node, destId, visited) {
     for (const child of node.neighbours) {
         if (visited.includes(child) === false) {
             if (graph[child - 1].neighbours.includes(destId)) {
-                return visited.length + 1;                
+                return visited.length + 1;
             } else {
                 return distanceToNode(graph, graph[child - 1], destId, visited);
             }
@@ -163,4 +182,4 @@ function distanceToNode(graph, node, destId, visited) {
     return distance;
 }
 
-export {createGraph, binarytree, ternarytree};
+export { createGraph, binarytree, ternarytree };
