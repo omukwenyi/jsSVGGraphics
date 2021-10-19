@@ -33,10 +33,23 @@ function drawRectClear(ctx, x, y, width, height, stroke) {
     ctx.strokeRect(x, y, width, height);
 }
 
-function drawValue(ctx, x, y, value) {
-    ctx.font = "bold 12px serif";
-    ctx.fillStyle = "black";
-    ctx.fillText(value, x, y);
+function drawValue(ctx, x, y, value, rotated = 0) {
+    let txt;
+    if (rotated === 1) {
+        txt = createSVGElement("text", {
+            x: x,
+            y: y,
+            stroke: "black",
+            textContent: value,
+            style: "writing-mode: tb;",
+        });
+    } else {
+        txt = createSVGElement("text", { x: x, y: y, stroke: "black", textContent: value });
+    }
+
+    txt.textContent = value;
+
+    ctx.appendChild(txt);
 }
 
 function drawValueActive(ctx, x, y, value, fill = "black") {
@@ -156,7 +169,7 @@ function drawGrid(svg, width, height, gap) {
             x2: width,
             y2: i,
             stroke: "black",
-            style: "stroke-width:0.2;",
+            style: "stroke-width:0.1;",
         });
 
         svg.appendChild(hline);

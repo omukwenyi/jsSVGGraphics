@@ -1,7 +1,7 @@
 "use strict";
 
 import { getBarChart } from "./barchartdata.js";
-import { drawGrid, drawLine, drawRect } from "./common.js";
+import { createSVGElement, drawGrid, drawLine, drawRect, drawValue } from "./common.js";
 
 function draw(bars = 0, useColors = false, showBarValues = false, xAxisText = "", yAxisText = "") {
     console.clear();
@@ -27,19 +27,14 @@ function draw(bars = 0, useColors = false, showBarValues = false, xAxisText = ""
     if (bars > 0) {
         //Axis
         let baseY = ch - 50;
-        let baseX = 100;
+        let baseX = 150;
         let rightEdge = cw - 50;
         let yTop = 25;
         const bchart = getBarChart(bars, useColors);
 
         //X axis
-        drawLine(canvas,[baseX, yTop], [baseX, baseY], "black", 2);
-        // drawValue(
-        //     ctx,
-        //     (baseX + rightEdge) / 2 - ctx.measureText(xAxisText).width / 2,
-        //     baseY + 40,
-        //     xAxisText
-        // );
+        drawLine(canvas, [baseX, yTop], [baseX, baseY], "black", 2);
+        drawValue(canvas, (baseX + rightEdge) / 2, baseY + 40, xAxisText);
 
         //Y axis
         let max = bchart[0].value;
@@ -65,19 +60,14 @@ function draw(bars = 0, useColors = false, showBarValues = false, xAxisText = ""
         for (let y = 0; y <= ticks; y++) {
             let tickYPos = baseY - y * majorYRange * adRatio;
             let yValue = parseInt(y * rt).toLocaleString();
-            // let ytext = ctx.measureText(yValue);
-            // let textWidth = Math.ceil(ytext.width) + 15;
+
+            let textWidth = yValue.length + 60;
 
             drawLine(canvas, [baseX - 10, tickYPos], [baseX, tickYPos], "red", 1);
-            // drawValue(ctx, baseX - textWidth, tickYPos, yValue);
+            drawValue(canvas, baseX - textWidth, tickYPos, yValue);
         }
 
-        //Y axis caption
-        // ctx.save();
-        // ctx.rotate((3 * Math.PI) / 2);
-        // drawValue(ctx, -((yTop + baseY) / 2) - ctx.measureText(yAxisText).width / 2, 25, yAxisText);
-
-        // ctx.restore();
+        drawValue(canvas, baseX / 2 - 50, baseY / 2, yAxisText, 1);
 
         let barwidth = 50;
         const xAxisWidth = rightEdge - baseX;
@@ -92,19 +82,13 @@ function draw(bars = 0, useColors = false, showBarValues = false, xAxisText = ""
             drawRect(canvas, xpos, ypos, barwidth, height, bar.fill);
 
             if (showBarValues) {
-                // drawValue(ctx, xpos + 3, ypos - 5, bar.value.toLocaleString());
+                drawValue(canvas, xpos + 3, ypos - 5, bar.value.toLocaleString());
             }
 
             //X axis bar label
             // drawValue(ctx, xpos + 10, baseY + 15, bar.id);
         }
     }
-}
-
-function drawValue(ctx, x, y, value) {
-    ctx.font = "bold 12px serif";
-    ctx.fillStyle = "black";
-    ctx.fillText(value, x, y);
 }
 
 let r = 1; // slices
