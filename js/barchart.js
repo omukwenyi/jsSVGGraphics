@@ -1,6 +1,7 @@
 "use strict";
 
-const NS = "http://www.w3.org/2000/svg";
+import { getBarChart } from "./barchartdata.js";
+import { drawGrid, drawLine, drawRect } from "./common.js";
 
 function draw(bars = 0, useColors = false, showBarValues = false, xAxisText = "", yAxisText = "") {
     console.clear();
@@ -17,7 +18,11 @@ function draw(bars = 0, useColors = false, showBarValues = false, xAxisText = ""
     const cx = cw / 2;
     const cy = ch / 2;
 
-    drawGrid(cw, ch, 10, 0.2);
+    while (canvas.lastChild) {
+        canvas.removeChild(canvas.lastChild);
+    }
+
+    drawGrid(canvas, cw, ch, 10);
 
     if (bars > 0) {
         //Axis
@@ -28,7 +33,7 @@ function draw(bars = 0, useColors = false, showBarValues = false, xAxisText = ""
         const bchart = getBarChart(bars, useColors);
 
         //X axis
-        // drawLine(canvas,[baseX, yTop], [baseX, baseY], "black", 2);
+        drawLine(canvas,[baseX, yTop], [baseX, baseY], "black", 2);
         // drawValue(
         //     ctx,
         //     (baseX + rightEdge) / 2 - ctx.measureText(xAxisText).width / 2,
@@ -44,7 +49,7 @@ function draw(bars = 0, useColors = false, showBarValues = false, xAxisText = ""
             }
         });
 
-        // drawLine(ctx, [baseX, baseY], [rightEdge, baseY], "black", 2);
+        drawLine(canvas, [baseX, baseY], [rightEdge, baseY], "black", 2);
 
         //Y axis ticks
         let yAxisHeight = baseY - yTop - 20;
@@ -63,7 +68,7 @@ function draw(bars = 0, useColors = false, showBarValues = false, xAxisText = ""
             // let ytext = ctx.measureText(yValue);
             // let textWidth = Math.ceil(ytext.width) + 15;
 
-            // drawLine(ctx, [baseX - 10, tickYPos], [baseX, tickYPos], "red", 1);
+            drawLine(canvas, [baseX - 10, tickYPos], [baseX, tickYPos], "red", 1);
             // drawValue(ctx, baseX - textWidth, tickYPos, yValue);
         }
 
@@ -84,7 +89,7 @@ function draw(bars = 0, useColors = false, showBarValues = false, xAxisText = ""
             let xpos = baseX + (i + 1) * gap + i * barwidth;
             let height = bar.value * (yAxisHeight / max);
             let ypos = baseY - height;
-            // drawRect(ctx, xpos, ypos, barwidth, height, bar.fill);
+            drawRect(canvas, xpos, ypos, barwidth, height, bar.fill);
 
             if (showBarValues) {
                 // drawValue(ctx, xpos + 3, ypos - 5, bar.value.toLocaleString());
@@ -96,123 +101,10 @@ function draw(bars = 0, useColors = false, showBarValues = false, xAxisText = ""
     }
 }
 
-const makeSVG = function (tagName, attrs, children) {
-    var element = document.createElementNS(NS, tagName);
-    if (attrs instanceof Array || typeof attrs == "string") {
-        children = attrs;
-        attrs = {};
-    }
-    if (attrs)
-        for (var a in attrs) {
-            element.setAttribute(a, attrs[a]);
-        }
-    if (children instanceof Array) {
-        children.forEach(function (c) {
-            element.appendChild(c);
-        });
-    } else if (typeof children == "string") {
-        element.textContent = children;
-    }
-    return element;
-};
-
 function drawValue(ctx, x, y, value) {
     ctx.font = "bold 12px serif";
     ctx.fillStyle = "black";
     ctx.fillText(value, x, y);
-}
-
-function drawRect(ctx, x, y, width, height, fill) {
-    ctx.fillStyle = fill;
-    ctx.fillRect(x, y, width, height);
-}
-
-function drawLine(ctx, begin, end, stroke = "black", width = 1) {
-    if (stroke) {
-        ctx.strokeStyle = stroke;
-    }
-
-    if (width) {
-        ctx.lineWidth = width;
-    }
-
-    ctx.beginPath();
-    ctx.moveTo(...begin);
-    ctx.lineTo(...end);
-    ctx.stroke();
-}
-
-function drawGrid(width, height, gap, lineWidth) {
-    const svg = document.querySelector("#svg");
-
-    var top = makeSVG("line", {
-        x1: 0,
-        y1: 0,
-        x2: width,
-        y2: 0,
-        stroke: "black",
-        style: "stroke-width:3;",
-    });
-
-    svg.appendChild(top);
-
-    var left = makeSVG("line", {
-        x1: 0,
-        y1: 0,
-        x2: 0,
-        y2: height,
-        stroke: "black",
-        style: "stroke-width:3;",
-    });
-
-    svg.appendChild(left);
-
-    var bottom = makeSVG("line", {
-        x1: 0,
-        y1: height,
-        x2: width,
-        y2: height,
-        stroke: "black",
-        style: "stroke-width:3;",
-    });
-    
-    svg.appendChild(bottom);
-
-    var right = makeSVG("line", {
-        x1: width,
-        y1: 0,
-        x2: width,
-        y2: height,
-        stroke: "black",
-        style: "stroke-width:3;",
-    });
-
-    svg.appendChild(right);
-
-    for (let i = 0; i < width; i += gap) {
-        let vline = makeSVG("line", {
-            x1: i,
-            y1: 0,
-            x2: i,
-            y2: height,
-            stroke: "black",
-            style: "stroke-width:0.2;",
-        });
-
-        svg.appendChild(vline);
-    }
-    for (let i = 0; i < height; i += gap) {
-        let hline = makeSVG("line", {
-            x1: 0,
-            y1: i,
-            x2: width,
-            y2: i,
-            stroke: "black",
-            style: "stroke-width:0.2;",
-        });
-
-        svg.appendChild(hline);
-    }
 }
 
 let r = 1; // slices

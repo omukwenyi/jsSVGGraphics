@@ -1,8 +1,31 @@
 "use strict";
 
+const NS = "http://www.w3.org/2000/svg";
+
+const createSVGElement = function (tagName, attrs, children) {
+    var element = document.createElementNS(NS, tagName);
+    if (attrs instanceof Array || typeof attrs == "string") {
+        children = attrs;
+        attrs = {};
+    }
+    if (attrs)
+        for (var a in attrs) {
+            element.setAttribute(a, attrs[a]);
+        }
+    if (children instanceof Array) {
+        children.forEach(function (c) {
+            element.appendChild(c);
+        });
+    } else if (typeof children == "string") {
+        element.textContent = children;
+    }
+    return element;
+};
+
 function drawRect(ctx, x, y, width, height, fill) {
-    ctx.fillStyle = fill;
-    ctx.fillRect(x, y, width, height);
+    ctx.appendChild(
+        createSVGElement("rect", { x: x, y: y, width: width, height: height, fill: fill })
+    );
 }
 
 function drawRectClear(ctx, x, y, width, height, stroke) {
@@ -22,28 +45,17 @@ function drawValueActive(ctx, x, y, value, fill = "black") {
     ctx.fillText(value, x, y);
 }
 
-function drawGrid(ctx, width, height, gap, lineWidth) {
-    for (let i = 0; i < width; i += gap) {
-        drawLine(ctx, [i, 0], [i, height], "gray", lineWidth);
-    }
-    for (let i = 0; i < height; i += gap) {
-        drawLine(ctx, [0, i], [width, i], "gray", lineWidth);
-    }
-}
-
 function drawLine(ctx, begin, end, stroke = "black", width = 1) {
-    if (stroke) {
-        ctx.strokeStyle = stroke;
-    }
-
-    if (width) {
-        ctx.lineWidth = width;
-    }
-
-    ctx.beginPath();
-    ctx.moveTo(...begin);
-    ctx.lineTo(...end);
-    ctx.stroke();
+    ctx.appendChild(
+        createSVGElement("line", {
+            x1: begin[0],
+            y1: begin[1],
+            x2: end[0],
+            y2: end[1],
+            stroke: stroke,
+            style: "stroke-width:" + width,
+        })
+    );
 }
 
 function drawCircleClear(ctx, x, y, radius = 10, stroke = "black", lineWidth = 1) {
@@ -80,7 +92,79 @@ function create2DArray(i, j) {
     return array;
 }
 
+function drawGrid(svg, width, height, gap) {
+    var top = createSVGElement("line", {
+        x1: 0,
+        y1: 0,
+        x2: width,
+        y2: 0,
+        stroke: "black",
+        style: "stroke-width:3;",
+    });
+
+    svg.appendChild(top);
+
+    var left = createSVGElement("line", {
+        x1: 0,
+        y1: 0,
+        x2: 0,
+        y2: height,
+        stroke: "black",
+        style: "stroke-width:3;",
+    });
+
+    svg.appendChild(left);
+
+    var bottom = createSVGElement("line", {
+        x1: 0,
+        y1: height,
+        x2: width,
+        y2: height,
+        stroke: "black",
+        style: "stroke-width:3;",
+    });
+
+    svg.appendChild(bottom);
+
+    var right = createSVGElement("line", {
+        x1: width,
+        y1: 0,
+        x2: width,
+        y2: height,
+        stroke: "black",
+        style: "stroke-width:3;",
+    });
+
+    svg.appendChild(right);
+
+    for (let i = 0; i < width; i += gap) {
+        let vline = createSVGElement("line", {
+            x1: i,
+            y1: 0,
+            x2: i,
+            y2: height,
+            stroke: "black",
+            style: "stroke-width:0.2;",
+        });
+
+        svg.appendChild(vline);
+    }
+    for (let i = 0; i < height; i += gap) {
+        let hline = createSVGElement("line", {
+            x1: 0,
+            y1: i,
+            x2: width,
+            y2: i,
+            stroke: "black",
+            style: "stroke-width:0.2;",
+        });
+
+        svg.appendChild(hline);
+    }
+}
+
 export {
+    createSVGElement,
     drawRect,
     drawRectClear,
     drawValue,
@@ -89,5 +173,6 @@ export {
     drawCircle,
     drawCircleClear,
     getRandomIntInclusive,
-    drawValueActive, create2DArray
+    drawValueActive,
+    create2DArray,
 };
