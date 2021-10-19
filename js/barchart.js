@@ -86,7 +86,7 @@ function draw(bars = 0, useColors = false, showBarValues = false, xAxisText = ""
             }
 
             //X axis bar label
-            // drawValue(ctx, xpos + 10, baseY + 15, bar.id);
+            drawValue(canvas, xpos + 10, baseY + 15, bar.id);
         }
     }
 }
