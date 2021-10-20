@@ -59,18 +59,18 @@ function drawRectClear(ctx, x, y, width, height, stroke) {
     ctx.strokeRect(x, y, width, height);
 }
 
-function drawValue(ctx, x, y, value, rotated = 0) {
+function drawValue(ctx, x, y, value, rotated = 0, stroke="black") {
     let txt;
     if (rotated === 1) {
         txt = createSVGElement("text", {
             x: x,
             y: y,
-            stroke: "black",
+            stroke: stroke,
             textContent: value,
             style: "writing-mode: tb;",
         });
     } else {
-        txt = createSVGElement("text", { x: x, y: y, stroke: "black", textContent: value });
+        txt = createSVGElement("text", { x: x, y: y, stroke: stroke, textContent: value });
     }
 
     txt.textContent = value;
@@ -108,13 +108,8 @@ function drawCircleClear(ctx, x, y, radius = 10, stroke = "black", lineWidth = 1
 }
 
 function drawCircle(ctx, x, y, radius = 10, stroke = "black", fill = "black", lineWidth = 1) {
-    ctx.strokeStyle = stroke;
-    ctx.fillStyle = fill;
-    ctx.lineWidth = lineWidth;
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, 2 * Math.PI, true);
-    ctx.stroke();
-    ctx.fill();
+    let circle = createSVGElement("circle", {cx: x, cy: y, r: radius, stroke: stroke, fill:fill, style: `stroke-width: ${lineWidth}`});
+    ctx.appendChild(circle);
 }
 
 function getRandomIntInclusive(min, max) {
