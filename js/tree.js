@@ -1,9 +1,9 @@
 "use strict";
 
-import { ternarytree } from "./nodedata.js";
+import { ternarytree, binarytree } from "./nodedata.js";
 import { drawGrid, drawCircle, drawLine, drawValue } from "./common.js";
 
-function init(nodes) {
+function init(nodes, type) {
     console.clear();
 
     const canvas = document.querySelector("#svg");
@@ -28,30 +28,30 @@ function init(nodes) {
     drawLine(canvas, [cx, 0], [cx, ch], "red", 1);
     drawLine(canvas, [0, cy], [cw, cy], "red", 1);
 
-    canvas.onwheel = (event) => {
-        event.preventDefault();
+    let root;
 
-        scale += event.deltaY * -0.001;
-        scale = Math.min(Math.max(0.5, scale), 2);
-        //   console.log("event scale", scale);
-        init(nodes);
-    };
-    // let root = binarytree(0, nodes);
-    // draw(ctx, root, cx, 50, null);
-
-    // canvas.scale(scale, scale);
-
-    // console.log("main scale", scale);
-    let root = ternarytree(0, nodes);
-    drawT(canvas, root, cx, 50, null);
+    //
+    switch (type) {
+        case 1:
+            root = binarytree(0, nodes);
+            draw(canvas, root, cx, 50, null);
+            break;
+        case 2:
+            root = ternarytree(0, nodes);
+            drawT(canvas, root, cx, 50, null);
+            break;
+        case 3:
+            root = randomtree(0, nodes);
+            break;
+        default:
+            break;
+    }
 }
 
 function drawT(ctx, root, px, py, direction = null) {
     if (root === null) {
         return;
     }
-
-    // var canvas = ctx.canvas;
     let cx = ctx.width.animVal.value / 2;
 
     const radius = 15;
@@ -105,14 +105,8 @@ function drawT(ctx, root, px, py, direction = null) {
         }
     }
 
-    //console.log(root.id, level, ypos, parseInt(ccx));
-    //console.log(root.id, level);
+   
     drawCircle(ctx, ccx, ypos, radius, "black", "rgb(0,0,0,0.9)");
-
-    // ctx.font = "bold 0.7em serif";
-    // ctx.fillStyle = "white";
-    // ctx.fillText(formatNum(root.id), ccx - 8, ypos + 5);
-
     drawValue(ctx, ccx - 8, ypos + 5, formatNum(root.id), 0, "white");
 
     if (root.left !== null) {
@@ -131,11 +125,9 @@ function draw(ctx, root, px, py, direction = null) {
         return;
     }
 
-    var canvas = ctx.canvas;
-    let cx = canvas.width / 2;
-    //const cy = canvas.height / 2;
-    //let ccx = 0;
-    const radius = 10;
+    let cx = ctx.width.animVal.value / 2;
+    
+    const radius = 15;
     const level = parseInt(Math.log2(root.id));
     const ypos = level * 60 + radius * 2;
     const xpos = (px, direction) => {
@@ -154,13 +146,9 @@ function draw(ctx, root, px, py, direction = null) {
     if (direction !== null) {
         drawLine(ctx, [px, py], [ccx, ypos], "black", 1.5);
     }
-
-    console.log(root.id, level, ypos, parseInt(ccx));
+    
     drawCircle(ctx, ccx, ypos, radius, "black", "rgb(0,0,0,0.9)");
-
-    ctx.font = "bold 0.7em serif";
-    ctx.fillStyle = "white";
-    ctx.fillText(formatNum(root.id), ccx - 8, ypos + 5);
+    drawValue(ctx, ccx - 8, ypos + 5, formatNum(root.id), 0, "white");
 
     if (root.left !== null) {
         draw(ctx, root.left, ccx, ypos, "L");
@@ -177,88 +165,6 @@ function formatNum(n) {
     }
 }
 
-function draw1(nodes) {
-    console.clear();
-    resize();
-
-    const canvas = document.querySelector("#canvas");
-    const pi = Math.PI;
-
-    if (canvas.getContext) {
-        const ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const cx = canvas.width / 2;
-        const cy = canvas.height / 2;
-
-        drawGrid(ctx, canvas.width, canvas.height, 10, 0.2);
-        drawLine(ctx, [cx, 0], [cx, canvas.height], "red", 1);
-        drawLine(ctx, [0, cy], [canvas.width, cy], "red", 1);
-
-        if (nodes > 0) {
-            if (nodes === 1) {
-                drawCircle(ctx, cx, cy, 20);
-            } else if (nodes === 2) {
-                const edge = canvas.height / 3;
-                drawLine(ctx, [cx, cy - edge / 2], [cx, cy + edge / 2], "black", 2);
-                drawCircle(ctx, cx, cy - edge / 2, 20);
-                drawCircle(ctx, cx, cy + edge / 2, 20);
-            } else if (nodes === 3) {
-                const drop = canvas.height / 3;
-                const shift = drop * Math.tan((30 * pi) / 180);
-                drawLine(ctx, [cx, cy - drop / 2], [cx - shift, cy + drop / 2], "black", 2);
-                drawLine(ctx, [cx, cy - drop / 2], [cx + shift, cy + drop / 2], "black", 2);
-
-                drawCircle(ctx, cx, cy - drop / 2, 20);
-                drawCircle(ctx, cx - shift, cy + drop / 2, 20);
-                drawCircle(ctx, cx + shift, cy + drop / 2, 20);
-            } else if (nodes === 4) {
-                const drop = canvas.height / 3;
-                const shift = drop * Math.tan((30 * pi) / 180);
-                drawLine(ctx, [cx, cy - drop / 2], [cx - shift, cy + drop / 2], "black", 2);
-                drawLine(ctx, [cx, cy - drop / 2], [cx + shift, cy + drop / 2], "black", 2);
-
-                drawCircle(ctx, cx, cy - drop / 2, 20);
-                drawCircle(ctx, cx - shift, cy + drop / 2, 20);
-                drawCircle(ctx, cx + shift, cy + drop / 2, 20);
-            }
-        }
-    }
-}
-
-// function drawCircle(ctx, x, y, radius = 10, stroke = "black", fill = "black") {
-//     ctx.strokeStyle = stroke;
-//     ctx.fillStyle = fill;
-//     ctx.lineWidth = 1;
-//     ctx.beginPath();
-//     ctx.arc(x, y, radius, 0, 2 * Math.PI, true);
-//     ctx.stroke();
-//     ctx.fill();
-// }
-
-// function drawLine(ctx, begin, end, stroke = "black", width = 1) {
-//     if (stroke) {
-//         ctx.strokeStyle = stroke;
-//     }
-
-//     if (width) {
-//         ctx.lineWidth = width;
-//     }
-
-//     ctx.beginPath();
-//     ctx.moveTo(...begin);
-//     ctx.lineTo(...end);
-//     ctx.stroke();
-// }
-
-// function drawGrid(ctx, width, height, gap, lineWidth) {
-//     for (let i = 0; i < width; i += gap) {
-//         drawLine(ctx, [i, 0], [i, height], "gray", lineWidth);
-//     }
-//     for (let i = 0; i < height; i += gap) {
-//         drawLine(ctx, [0, i], [width, i], "gray", lineWidth);
-//     }
-// }
-
 function resize() {
     const canvas = document.querySelector("#svg");
     const header = document.querySelector("#title");
@@ -269,20 +175,26 @@ function resize() {
 }
 
 let r = 1; // nodes
+let type = 1;
+
+const treeType = document.getElementById("treetype");
+treeType.onchange = (e) => {
+    type = parseInt(e.target.value);
+    init(r, type);
+};
 
 const controlOut = document.getElementById("nodes-output");
 const control = document.getElementById("nodes");
 control.oninput = () => {
     controlOut.textContent = r = control.value;
-    init(r);
+    init(r, type);
 };
 
 window.onresize = () => {
     //draw(parseInt(r));
 
-    init(r);
+    init(r, type);
 };
 
-//draw(r);
 let scale = 1;
-init(r);
+init(r, type);

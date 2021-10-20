@@ -56,6 +56,12 @@ input[type="checkbox"] {
     min-width: 12px;
 }
 
+select{
+    padding: 5px;
+    min-width: 12px;
+    min-height: 20px;
+}
+
 .row{
     clear: both;
     width: 100%;

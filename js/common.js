@@ -67,10 +67,10 @@ function drawValue(ctx, x, y, value, rotated = 0, stroke="black") {
             y: y,
             stroke: stroke,
             textContent: value,
-            style: "writing-mode: tb;",
+            style: "writing-mode: tb; font-size: 0.8em;",
         });
     } else {
-        txt = createSVGElement("text", { x: x, y: y, stroke: stroke, textContent: value });
+        txt = createSVGElement("text", { x: x, y: y, stroke: stroke, textContent: value , style: "font-size: 0.8em;"});
     }
 
     txt.textContent = value;
