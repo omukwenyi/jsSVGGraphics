@@ -22,6 +22,17 @@ const createSVGElement = function (tagName, attrs, children) {
     return element;
 };
 
+function drawTriangle(ctx, pointA, pointB, pointC, fill, width = 1) {
+    drawLine(ctx, pointA, pointB, "black", width);
+    drawLine(ctx, pointB, pointC, "black", width);
+    drawLine(ctx, pointC, pointA, "black", width);
+}
+
+function drawLegend(ctx, x, y, width, height, fill, label, labelFill) {
+    drawRect(ctx, x, y, width, height, fill);
+    drawValue(ctx, x + width + 5, y + 5+ (height/2), label, 0);
+}
+
 function drawRect(ctx, x, y, width, height, fill) {
     ctx.appendChild(
         createSVGElement("rect", { x: x, y: y, width: width, height: height, fill: fill })
@@ -178,7 +189,8 @@ function drawGrid(svg, width, height, gap) {
 
 export {
     createSVGElement,
-    drawRect,
+    drawTriangle,
+    drawRect, drawLegend,
     drawRectClear,
     drawValue,
     drawGrid,
