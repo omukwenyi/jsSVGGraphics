@@ -1,9 +1,18 @@
 "use strict";
 
 import { getPieData } from "./piedata.js";
-import { createSVGElement, drawGrid, drawValue, drawTriangle, drawLegend } from "./common.js";
+import {
+    createSVGElement,
+    drawGrid,
+    drawValue,
+    drawTriangle,
+    drawLegend,
+    drawLine,
+} from "./common.js";
 
 function draw(nodes) {
+    console.clear();
+
     const canvas = document.querySelector("#svg");
     const header = document.querySelector("#title");
     const headerHeight = header.scrollHeight;
@@ -16,20 +25,22 @@ function draw(nodes) {
 
     const cx = cw / 2;
     const cy = ch / 2;
+    console.log("cx", cx, "cy", cy);
 
     while (canvas.lastChild) {
         canvas.removeChild(canvas.lastChild);
     }
 
     drawGrid(canvas, cw, ch, 10);
+    drawLine(canvas, [0, cy], [cw, cy], "red", 0.5);
+    drawLine(canvas, [cx, 0], [cx, ch], "red", 0.5);
 
     let radius = Math.min(ch / 2, cw / 2) - 20;
 
     if (nodes > 0) {
         let pie = getPieData(nodes);
 
-        pie.sort((a, b) => b.value - a.value);
-        //   console.log(pie);
+        // pie.sort((a, b) => b.value - a.value);
 
         let sum = 0;
         pie.forEach((item) => {
@@ -51,17 +62,39 @@ function draw(nodes) {
             let x2 = radius * Math.cos(radEnd);
             let y2 = radius * Math.sin(radEnd);
 
-            drawTriangle(canvas, [cx, cy], [cx + x1, cy + y1], [cx + x2, cy + y2], p.fill);
+            // drawSector(canvas, xpos, cy, radius, startAngle, radEnd, p.fill, p.fill);
+            const islarge = radEnd - startAngle >= Math.PI ? true : false;
+            drawSector(
+                canvas,
+                cx,
+                cy,
+                cx + x1,
+                cy + y1,
+                radius,
+                cx + x2,
+                cy + y2,
+                p.fill,
+                p.fill,
+                islarge
+            );
 
-            drawSector(canvas, xpos, cy, radius, startAngle, radEnd, p.fill, p.fill);
-            //console.log([x1, y1], [x2, y2]);
+            // drawTriangle(canvas, [cx, cy], [cx + x1, cy + y1], [cx + x2, cy + y2], p.fill);
 
             let percent = parseFloat(ratio * 100).toFixed(1) + "%";
-            let valueXpos = (cx + (2 * cx + x1 + x2) / 2) / 2;
-            let valueYpos = (cy + (2 * cy + y1 + y2) / 2) / 2;
+            // let valueXpos = (cx + (2 * cx + x1 + x2) / 2) / 2;
+            // let valueYpos = (cy + (2 * cy + y1 + y2) / 2) / 2;
+            let x3 = 0.667 * radius * Math.cos(startAngle);
+            let x4 = 0.667 * radius * Math.cos(radEnd);
+            let y3 = 0.667 *radius * Math.sin(startAngle);
+            let y4 = 0.667 * radius * Math.sin(radEnd);
 
-            if (nodes == 2 && i == 0 && ratio > 0.5) {
-                drawValue(canvas, 2 * cx - valueXpos, 2 * cy - valueYpos, percent);
+            let valueXpos = cx + (x3 + x4) / 2;
+            let valueYpos = cy + (y3 + y4) / 2;
+
+            if (nodes == 1) {
+                drawValue(canvas, cx, cy, percent);
+            } else if (nodes == 2 && i == 0 && ratio > 0.5) {
+                drawValue(canvas, 2 * cx - valueXpos, 2 * cy - valueYpos + 10, percent);
             } else {
                 drawValue(canvas, valueXpos, valueYpos, percent);
             }
@@ -72,8 +105,29 @@ function draw(nodes) {
     }
 }
 
-function drawSector(ctx, x, y, radius, start = 0, end = 0, stroke = "black", fill = "green") {
-    let sect = createSVGElement("circle");
+function drawSector(
+    ctx,
+    cx,
+    cy,
+    x,
+    y,
+    radius,
+    x2,
+    y2,
+    stroke = "black",
+    fill = "green",
+    isLarge = false
+) {
+    console.log([x, y], radius, [x2, y2], isLarge);
+
+    let sect = createSVGElement("path", {
+        d: `M ${cx},${cy} ${x},${y} A ${radius},${radius} 0 ${isLarge ? 1 : 0},1 ${x2},${
+            isLarge ? y2 - 0.001 : y2
+        } Z`,
+        style: `stroke: "black"; fill: ${fill};`,
+    });
+
+    console.log(sect);
 
     ctx.appendChild(sect);
 }

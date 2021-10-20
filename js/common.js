@@ -22,15 +22,25 @@ const createSVGElement = function (tagName, attrs, children) {
     return element;
 };
 
+// function drawTriangle(ctx, pointA, pointB, pointC, fill, width = 1) {
+//     drawLine(ctx, pointA, pointB, "black", width);
+//     drawLine(ctx, pointB, pointC, "black", width);
+//     drawLine(ctx, pointC, pointA, "black", width);
+// }
+
 function drawTriangle(ctx, pointA, pointB, pointC, fill, width = 1) {
-    drawLine(ctx, pointA, pointB, "black", width);
-    drawLine(ctx, pointB, pointC, "black", width);
-    drawLine(ctx, pointC, pointA, "black", width);
+    const tri = createSVGElement("polyline", {
+        points: `${pointA[0]},${pointA[1]}  ${pointB[0]},${pointB[1]}  ${pointC[0]},${pointC[1]}`,
+        fill: fill,
+        style: `stroke: ${fill} ;`,
+    });
+
+    ctx.appendChild(tri);
 }
 
 function drawLegend(ctx, x, y, width, height, fill, label, labelFill) {
     drawRect(ctx, x, y, width, height, fill);
-    drawValue(ctx, x + width + 5, y + 5+ (height/2), label, 0);
+    drawValue(ctx, x + width + 5, y + 5 + height / 2, label, 0);
 }
 
 function drawRect(ctx, x, y, width, height, fill) {
@@ -190,7 +200,8 @@ function drawGrid(svg, width, height, gap) {
 export {
     createSVGElement,
     drawTriangle,
-    drawRect, drawLegend,
+    drawRect,
+    drawLegend,
     drawRectClear,
     drawValue,
     drawGrid,
