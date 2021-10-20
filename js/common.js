@@ -22,11 +22,16 @@ const createSVGElement = function (tagName, attrs, children) {
     return element;
 };
 
-// function drawTriangle(ctx, pointA, pointB, pointC, fill, width = 1) {
-//     drawLine(ctx, pointA, pointB, "black", width);
-//     drawLine(ctx, pointB, pointC, "black", width);
-//     drawLine(ctx, pointC, pointA, "black", width);
-// }
+function drawSector(ctx, center, start, radius, end, fill = "green", isLarge = false) {
+    let sect = createSVGElement("path", {
+        d: `M ${center[0]},${center[1]} ${start[0]},${start[1]} A${radius},${radius} 0 ${
+            isLarge ? 1 : 0
+        },1 ${end[0]},${isLarge ? end[1] - 0.001 : end[1]} Z`,
+        style: `fill: ${fill};`,
+    });
+
+    ctx.appendChild(sect);
+}
 
 function drawTriangle(ctx, pointA, pointB, pointC, fill, width = 1) {
     const tri = createSVGElement("polyline", {
@@ -200,6 +205,7 @@ function drawGrid(svg, width, height, gap) {
 export {
     createSVGElement,
     drawTriangle,
+    drawSector,
     drawRect,
     drawLegend,
     drawRectClear,
