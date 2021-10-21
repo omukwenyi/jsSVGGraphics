@@ -22,6 +22,11 @@ const createSVGElement = function (tagName, attrs, children) {
     return element;
 };
 
+function drawImage(ctx, src, x, y, width, height) {
+    let img = createSVGElement("image", { x: x, y: y, width: width, height: height, href: src });
+    ctx.appendChild(img);
+}
+
 function drawSector(ctx, center, start, radius, end, fill = "green", isLarge = false) {
     let sect = createSVGElement("path", {
         d: `M ${center[0]},${center[1]} ${start[0]},${start[1]} A${radius},${radius} 0 ${
@@ -221,6 +226,7 @@ function drawGrid(svg, width, height, gap) {
 export {
     createSVGElement,
     drawTriangle,
+    drawImage,
     drawSector,
     drawRect,
     drawLegend,
