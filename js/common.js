@@ -59,7 +59,7 @@ function drawRectClear(ctx, x, y, width, height, stroke) {
     ctx.strokeRect(x, y, width, height);
 }
 
-function drawValue(ctx, x, y, value, rotated = 0, stroke="black") {
+function drawValue(ctx, x, y, value, rotated = 0, stroke = "black") {
     let txt;
     if (rotated === 1) {
         txt = createSVGElement("text", {
@@ -70,7 +70,13 @@ function drawValue(ctx, x, y, value, rotated = 0, stroke="black") {
             style: "writing-mode: tb; font-size: 0.8em;",
         });
     } else {
-        txt = createSVGElement("text", { x: x, y: y, stroke: stroke, textContent: value , style: "font-size: 0.8em;"});
+        txt = createSVGElement("text", {
+            x: x,
+            y: y,
+            stroke: stroke,
+            textContent: value,
+            style: "font-size: 0.8em;",
+        });
     }
 
     txt.textContent = value;
@@ -79,9 +85,17 @@ function drawValue(ctx, x, y, value, rotated = 0, stroke="black") {
 }
 
 function drawValueActive(ctx, x, y, value, fill = "black") {
-    ctx.font = "bold 14px serif";
-    ctx.fillStyle = fill;
-    ctx.fillText(value, x, y);
+    let txt = createSVGElement("text", {
+        x: x,
+        y: y,
+        fill: fill,
+        textContent: value,
+        style: "font-size: 0.8em; font-weight:bold;",
+    });
+
+    txt.textContent = value;
+
+    ctx.appendChild(txt);
 }
 
 function drawLine(ctx, begin, end, stroke = "black", width = 1) {
@@ -108,7 +122,14 @@ function drawCircleClear(ctx, x, y, radius = 10, stroke = "black", lineWidth = 1
 }
 
 function drawCircle(ctx, x, y, radius = 10, stroke = "black", fill = "black", lineWidth = 1) {
-    let circle = createSVGElement("circle", {cx: x, cy: y, r: radius, stroke: stroke, fill:fill, style: `stroke-width: ${lineWidth}`});
+    let circle = createSVGElement("circle", {
+        cx: x,
+        cy: y,
+        r: radius,
+        stroke: stroke,
+        fill: fill,
+        style: `stroke-width: ${lineWidth}`,
+    });
     ctx.appendChild(circle);
 }
 

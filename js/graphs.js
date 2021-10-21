@@ -17,55 +17,59 @@ import { createGraph } from "./nodedata.js";
 function draw(nodes, maxEdges) {
     console.clear();
 
-    const canvas = document.querySelector("#canvas");
+    const canvas = document.querySelector("#svg");
     const header = document.querySelector("#title");
     const headerHeight = header.scrollHeight;
 
-    canvas.width = window.innerWidth - 40;
-    canvas.height = window.innerHeight - headerHeight - 40;
-    const cw = canvas.width;
-    const ch = canvas.height;
+    canvas.setAttribute("width", window.innerWidth - 20);
+    canvas.setAttribute("height", window.innerHeight - headerHeight - 60);
 
-    if (canvas.getContext) {
-        const ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const cx = canvas.width / 2;
-        const cy = canvas.height / 2;
+    const cw = canvas.width.animVal.value;
+    const ch = canvas.height.animVal.value;
 
-        drawGrid(ctx, canvas.width, canvas.height, 10, 0.2);
+    const cx = cw / 2;
+    const cy = ch / 2;
+    // console.log("cx", cx, "cy", cy);
 
-        if (nodes > 0) {
-            const full_graph = createGraph(
-                parseInt(nodes),
-                Math.min(parseInt(nodes), parseInt(maxEdges))
-            );
+    while (canvas.lastChild) {
+        canvas.removeChild(canvas.lastChild);
+    }
 
-            // console.log(full_graph);
-            const graph = full_graph.filter((e) => e.neighbours.length > 0);
+    drawGrid(canvas, cw, ch, 10);
+    drawLine(canvas, [cx, 0], [cx, ch], "red", 1);
+    drawLine(canvas, [0, cy], [cw, cy], "red", 1);
 
-            // console.log(graph);
+    if (nodes > 0) {
+        const full_graph = createGraph(
+            parseInt(nodes),
+            Math.min(parseInt(nodes), parseInt(maxEdges))
+        );
 
-            //let positions = spring(ctx, graph, cw, ch, 25);
-            let radius = 20;
-            let posGraph = reinGold(ctx, graph, cw, ch, radius);
+        // console.log(full_graph);
+        const graph = full_graph.filter((e) => e.neighbours.length > 0);
 
-            const edgePositions = getEdgePositions(posGraph);
+        // console.log(graph);
 
-            // console.log(cw, ch);
-            console.log(posGraph);
+        //let positions = spring(ctx, graph, cw, ch, 25);
+        let radius = 20;
+        let posGraph = reinGold(canvas, graph, cw, ch, radius);
 
-            for (let i = 0; i < edgePositions.length; i++) {
-                const pos = edgePositions[i];
-                drawLine(ctx, pos[2], pos[3], "black", 0.75);
-            }
+        const edgePositions = getEdgePositions(posGraph);
 
-            for (let i = 0; i < posGraph.length; i++) {
-                const node = posGraph[i];
+        // console.log(cw, ch);
+        console.log(posGraph);
 
-                const x = node.posX;
-                const y = node.posY;
-                drawGraphNode(ctx, node, x, y, radius);
-            }
+        for (let i = 0; i < edgePositions.length; i++) {
+            const pos = edgePositions[i];
+            drawLine(canvas, pos[2], pos[3], "black", 0.75);
+        }
+
+        for (let i = 0; i < posGraph.length; i++) {
+            const node = posGraph[i];
+
+            const x = node.posX;
+            const y = node.posY;
+            drawGraphNode(canvas, node, x, y, radius);
         }
     }
 }
@@ -466,12 +470,13 @@ control.oninput = () => {
 };
 
 window.onresize = () => {
-    const canvas = document.querySelector("#canvas");
+    const canvas = document.querySelector("#svg");
     const header = document.querySelector("#title");
     const headerHeight = header.scrollHeight;
 
-    canvas.width = window.innerWidth - 80;
-    canvas.height = window.innerHeight - headerHeight - 40;
+    canvas.setAttribute("width", window.innerWidth - 20);
+    canvas.setAttribute("height", window.innerHeight - headerHeight - 60);
+
 
     draw(r, m);
 };
