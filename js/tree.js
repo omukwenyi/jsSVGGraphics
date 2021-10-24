@@ -127,19 +127,20 @@ function draw(ctx, root, px, py, direction = null) {
 
     let cx = ctx.width.animVal.value / 2;
     
-    const radius = 15;
+    const radius = 13;
     const level = parseInt(Math.log2(root.id));
     const ypos = level * 60 + radius * 2;
     const xpos = (px, direction) => {
-        let angle = ((180 - level * 30) / 2) * (Math.PI / 180);
-        if (direction == "L") {
-            return px - 100 * Math.tan(angle);
-        } else if (direction == "R") {
-            return px + 100 * Math.tan(angle);
-        } else {
-            return cx;
-        }
-    };
+
+    let displacement = ctx.width.animVal.value / Math.pow(2, level + 1);
+    if (direction == "L") {
+      return px - displacement;
+    } else if (direction == "R") {
+      return px + displacement;
+    } else {
+      return cx;
+    }
+  };
 
     const ccx = xpos.call(null, px, direction);
 
